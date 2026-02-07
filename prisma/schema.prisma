@@ -1,0 +1,155 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  fullName      String   @map("full_name")
+  passwordHash  String   @map("password_hash")
+  role          Role     @default(EDITOR)
+  isActive      Boolean  @default(true) @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  createdAnnotations   Anotacion[] @relation("CreatedAnnotations")
+  updatedAnnotations   Anotacion[] @relation("UpdatedAnnotations")
+  verifiedReferences   Referencia[]
+  auditLogs            AuditLog[]
+
+  @@map("users")
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+}
+
+model Articulo {
+  id          Int      @id @default(autoincrement())
+  numero      String   @unique
+  nombre      String
+  textoLegal  String   @map("texto_legal")
+  esVigente   Boolean  @default(true) @map("es_vigente")
+  orden       Int
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  anotaciones Anotacion[]
+
+  @@map("articulos")
+}
+
+model TipoReferencia {
+  id          Int      @id @default(autoincrement())
+  nombre      String   @unique
+  descripcion String?
+
+  // Relations
+  referencias Referencia[]
+
+  @@map("tipos_referencia")
+}
+
+model Referencia {
+  id                 String    @id @default(uuid())
+  tipoReferenciaId   Int       @map("tipo_referencia_id")
+  numero             String
+  titulo             String?
+  urlPrincipal       String?   @map("url_principal")
+  urlNexus           String?   @map("url_nexus")
+  urlCatalogo        String?   @map("url_catalogo")
+  urlRepositorio     String?   @map("url_repositorio")
+  esVerificada       Boolean   @default(false) @map("es_verificada")
+  fechaVerificacion  DateTime? @map("fecha_verificacion")
+  verificadoPorId    String?   @map("verificado_por")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  tipoReferencia     TipoReferencia @relation(fields: [tipoReferenciaId], references: [id])
+  verificadoPor      User?          @relation(fields: [verificadoPorId], references: [id])
+  anotaciones        AnotacionReferencia[]
+
+  @@unique([tipoReferenciaId, numero])
+  @@map("referencias")
+}
+
+model TipoAnotacion {
+  id       Int      @id @default(autoincrement())
+  nombre   String   @unique
+  colorHex String?  @map("color_hex")
+  icono    String?
+
+  // Relations
+  anotaciones Anotacion[]
+
+  @@map("tipos_anotacion")
+}
+
+model Anotacion {
+  id               String   @id @default(uuid())
+  articuloId       Int      @map("articulo_id")
+  tipoAnotacionId  Int      @map("tipo_anotacion_id")
+  contenido        String
+  orden            Int
+  esVisible        Boolean  @default(true) @map("es_visible")
+  createdById      String   @map("created_by")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+  updatedById      String?  @map("updated_by")
+
+  // Relations
+  articulo         Articulo       @relation(fields: [articuloId], references: [id], onDelete: Cascade)
+  tipoAnotacion    TipoAnotacion  @relation(fields: [tipoAnotacionId], references: [id])
+  createdBy        User           @relation("CreatedAnnotations", fields: [createdById], references: [id])
+  updatedBy        User?          @relation("UpdatedAnnotations", fields: [updatedById], references: [id])
+  referencias      AnotacionReferencia[]
+
+  @@map("anotaciones")
+}
+
+model AnotacionReferencia {
+  anotacionId   String @map("anotacion_id")
+  referenciaId  String @map("referencia_id")
+  orden         Int
+
+  // Relations
+  anotacion     Anotacion  @relation(fields: [anotacionId], references: [id], onDelete: Cascade)
+  referencia    Referencia @relation(fields: [referenciaId], references: [id], onDelete: Cascade)
+
+  @@id([anotacionId, referenciaId])
+  @@map("anotacion_referencias")
+}
+
+model AuditLog {
+  id             String   @id @default(uuid())
+  userId         String   @map("user_id")
+  actionType     String   @map("action_type")
+  entityType     String   @map("entity_type")
+  entityId       String   @map("entity_id")
+  previousValues Json?    @map("previous_values")
+  newValues      Json?    @map("new_values")
+  changedFields  Json?    @map("changed_fields")
+  ipAddress      String?  @map("ip_address")
+  userAgent      String?  @map("user_agent")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user           User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@index([createdAt(sort: Desc)])
+  @@map("audit_log")
+}
