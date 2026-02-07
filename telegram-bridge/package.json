@@ -16,6 +16,7 @@
   "author": "Delfino.cr",
   "license": "MIT",
   "dependencies": {
+    "dotenv": "^17.2.4",
     "node-telegram-bot-api": "^0.66.0"
   },
   "devDependencies": {
