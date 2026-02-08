@@ -55,7 +55,7 @@ export default function UserListPage({ initialUsers, session }: UserListProps) {
       const res = await fetch(`/api/users/${editingUser.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.JSON.stringify({ fullName: editName, role: editRole }),
+        body: JSON.stringify({ fullName: editName, role: editRole }),
       })
       if (!res.ok) {
         const data = await res.json()
