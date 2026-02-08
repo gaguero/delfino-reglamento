@@ -1,14 +1,13 @@
-import Link from 'next/link'
-import { GeistSans } from '@/lib/fonts'
+'use client'
+
+import { geistSans } from '@/lib/fonts' // Correctly import lowercase 'geistSans'
 import { cn } from '@/lib/utils'
-import { auth } from '@/lib/auth'
+import AdminPageHeader from '@/app/admin/_components/AdminPageHeader'
 
-export default async function AdminPageHeader({ title, subtitle }: { title: string; subtitle: string }) {
-  const session = await auth()
-
+export default function AdminPageHeader({ title, subtitle }: { title: string; subtitle: string }) {
   return (
     <header className="admin-page-header">
-      <h1 className={cn('admin-page-title', GeistSans.className)}>{title}</h1>
+      <h1 className={cn('admin-page-title', geistSans.variable)}>{title}</h1> {/* Use correct variable name */}
       <p className="admin-page-subtitle">{subtitle}</p>
     </header>
   )

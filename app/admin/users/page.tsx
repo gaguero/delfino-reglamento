@@ -1,8 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { cn } from '@/lib/utils'
+import Link from 'next/link'
 import AdminPageHeader from '../_components/AdminPageHeader'
+import { cn } from '@/lib/utils'
+import { auth } from '@/lib/auth' // This line might need adjustment if auth is not directly available client-side
 
 interface User {
   id: string
@@ -16,10 +18,12 @@ interface User {
 
 interface UserListProps {
   initialUsers: User[]
-  session: any
+  session: any // Use a more specific type if available
 }
 
-export default function UserList({ initialUsers, session }: UserListProps) {
+// This component now expects props directly, and session is passed down.
+// The getServerSideProps function has been removed as it's not used in App Router.
+export default function UserListPage({ initialUsers, session }: UserListProps) {
   const [users, setUsers] = useState(initialUsers)
   const [editingUser, setEditingUser] = useState<User | null>(null)
   const [editName, setEditName] = useState('')
@@ -51,7 +55,7 @@ export default function UserList({ initialUsers, session }: UserListProps) {
       const res = await fetch(`/api/users/${editingUser.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fullName: editName, role: editRole }),
+        body: JSON.JSON.stringify({ fullName: editName, role: editRole }),
       })
       if (!res.ok) {
         const data = await res.json()
@@ -73,11 +77,9 @@ export default function UserList({ initialUsers, session }: UserListProps) {
       <AdminPageHeader title="Gestión de Usuarios" subtitle="Administra las cuentas de los usuarios del sistema" />
 
       <div className="admin-page-content">
-        <div className="flex justify-end mb-4">
-          <Link href="/admin/users/new" className="btn btn-primary btn-sm">
-            + Nuevo Usuario
-          </Link>
-        </div>
+        <Link href="/admin/users/new" className="btn btn-primary btn-sm mb-4">
+          + Nuevo Usuario
+        </Link>
 
         <div className="admin-card">
           <div className="admin-card-body">
@@ -101,7 +103,8 @@ export default function UserList({ initialUsers, session }: UserListProps) {
                       </p>
                     </div>
                     <div className="flex gap-2">
-                      {session.user.email !== 'gagueromesen@gmail.com' && user.email !== 'gagueromesen@gmail.com' ? (
+                      {/* Prevent editing/toggling master user or if user is not admin */}
+                      {(session.user.email !== 'gagueromesen@gmail.com' && user.email !== 'gagueromesen@gmail.com') && (
                         <>
                           <button
                             onClick={() => { setEditingUser(user); setEditName(user.fullName); setEditRole(user.role) }}
@@ -117,9 +120,10 @@ export default function UserList({ initialUsers, session }: UserListProps) {
                             {loading === user.id ? '...' : user.isActive ? 'Desactivar' : 'Activar'}
                           </button>
                         </>
-                      ) : (
-                        <span className="text-xs text-gray-500 italic">(Usuario maestro)</span>
                       )}
+                       {(session.user.email === 'gagueromesen@gmail.com' || user.email === 'gagueromesen@gmail.com') && (
+                           <span className="text-xs text-gray-500 italic">(Usuario maestro)</span>
+                       )}
                     </div>
                   </div>
                 </li>
@@ -173,8 +177,6 @@ export default function UserList({ initialUsers, session }: UserListProps) {
   )
 }
 
-// Helper to pass session to the component
-export async function getServerSideProps() {
-  const session = await auth()
-  return { props: { session } }
-}
+// Removed getServerSideProps as it's not used in App Router.
+// Data fetching should be done in Server Components.
+// The 'session' prop is now directly passed from the parent layout.

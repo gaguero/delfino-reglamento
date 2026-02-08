@@ -1,17 +1,8 @@
-import { Geist, Geist_Mono } from 'next/font/google'
+import { geistSans } from '@/lib/fonts' // Correctly import lowercase 'geistSans'
+import { geistMono } from '@/lib/fonts' // Correctly import lowercase 'geistMono'
 import './globals.css'
 import './delfino.css'
-import './fonts'
-
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-})
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-})
+import './fonts.css' // Ensure fonts.css applies the variables if not directly in layout.tsx
 
 export const metadata = {
   title: 'Reglamento Asamblea Legislativa CR',
@@ -21,6 +12,7 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es">
+      {/* Apply font variables directly here using the correct variable names */}
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
       </body>
