@@ -43,159 +43,128 @@ interface ArticleAnnotationsProps {
 export default function ArticleAnnotations({ anotaciones }: ArticleAnnotationsProps) {
   const [activeTab, setActiveTab] = useState<'anotaciones' | 'referencias'>('anotaciones')
 
-  // Get all unique references from annotations
   const allReferencias = anotaciones.flatMap((anotacion) => 
     anotacion.referencias.map((ref) => ref.referencia)
   )
   
-  // Remove duplicates by id
   const uniqueReferencias = allReferencias.filter((ref, index, self) => 
     index === self.findIndex((r) => r.id === ref.id)
   )
 
   const getTipoBadgeClass = (tipoNombre: string): string => {
     const tipoSlug = tipoNombre.toLowerCase()
-    if (tipoSlug.includes('jurisprudencia')) return 'annotation-badge--jurisprudencia'
-    if (tipoSlug.includes('contexto')) return 'annotation-badge--contexto'
-    if (tipoSlug.includes('nota')) return 'annotation-badge--nota'
-    return 'annotation-badge--nota'
+    if (tipoSlug.includes('jurisprudencia')) return 'd-annotation__badge--jurisprudencia'
+    if (tipoSlug.includes('contexto')) return 'd-annotation__badge--contexto'
+    return 'd-annotation__badge--nota'
   }
 
   return (
-    <aside className="annotations-panel" aria-label="Anotaciones y referencias">
-      <h2 className="sidebar-title">Contenido Adicional</h2>
-      
-      <div className="annotations-tabs">
+    <>
+      <div className="d-annotations__header">
         <button
-          className={`annotations-tab ${activeTab === 'anotaciones' ? 'annotations-tab--active' : ''}`}
+          className={`d-annotations__tab ${activeTab === 'anotaciones' ? 'd-annotations__tab--active' : ''}`}
           onClick={() => setActiveTab('anotaciones')}
         >
           Anotaciones ({anotaciones.length})
         </button>
         <button
-          className={`annotations-tab ${activeTab === 'referencias' ? 'annotations-tab--active' : ''}`}
+          className={`d-annotations__tab ${activeTab === 'referencias' ? 'd-annotations__tab--active' : ''}`}
           onClick={() => setActiveTab('referencias')}
         >
           Referencias ({uniqueReferencias.length})
         </button>
       </div>
 
-      {activeTab === 'anotaciones' ? (
-        <div className="annotations-list">
-          {anotaciones.length === 0 ? (
-            <div className="empty-state">
-              <div className="empty-state__icon">📝</div>
-              No hay anotaciones para este artículo
+      <div className="d-annotations__list">
+        {activeTab === 'anotaciones' ? (
+          anotaciones.length === 0 ? (
+            <div className="d-empty">
+              <div className="d-empty__icon">📝</div>
+              <div className="d-empty__title">Sin anotaciones</div>
+              <div className="d-empty__text">Este artículo no tiene anotaciones</div>
             </div>
           ) : (
             anotaciones.map((anotacion) => (
-              <article key={anotacion.id} className="annotation-card">
-                <span className={`annotation-badge ${getTipoBadgeClass(anotacion.tipoAnotacion.nombre)}`}>
+              <article key={anotacion.id} className="d-annotation">
+                <span className={`d-annotation__badge ${getTipoBadgeClass(anotacion.tipoAnotacion.nombre)}`}>
                   {anotacion.tipoAnotacion.nombre}
                 </span>
                 
                 <div 
-                  className="annotation-content"
+                  className="d-annotation__content"
                   dangerouslySetInnerHTML={{ __html: anotacion.contenido }}
                 />
                 
                 {anotacion.referencias.length > 0 && (
-                  <div className="annotation-refs">
-                    <h4 className="annotation-refs__title">Referencias vinculadas</h4>
+                  <div className="d-ref-links">
+                    <div className="d-ref-links__title">Referencias vinculadas</div>
                     {anotacion.referencias.map(({ referencia }) => (
-                      <div key={referencia.id} className="ref-item">
-                        <span className="ref-item__numero">
+                      <div key={referencia.id} style={{ marginBottom: '8px' }}>
+                        <div style={{ fontSize: '0.875rem', fontWeight: 500 }}>
                           {referencia.tipoReferencia.nombre} {referencia.numero}
-                        </span>
+                        </div>
                         {referencia.titulo && (
-                          <span className="ref-item__titulo">{referencia.titulo}</span>
+                          <div style={{ fontSize: '0.8125rem', color: 'var(--d-gray-500)' }}>
+                            {referencia.titulo}
+                          </div>
                         )}
                       </div>
                     ))}
                   </div>
                 )}
                 
-                <footer className="annotation-meta">
-                  Por {anotacion.createdBy.fullName} • {' '}
-                  {new Date(anotacion.createdAt).toLocaleDateString('es-CR')}
+                <footer className="d-annotation__meta">
+                  Por {anotacion.createdBy.fullName}
                 </footer>
               </article>
             ))
-          )}
-        </div>
-      ) : (
-        <div className="references-list">
-          {uniqueReferencias.length === 0 ? (
-            <div className="empty-state">
-              <div className="empty-state__icon">📚</div>
-              No hay referencias para este artículo
+          )
+        ) : (
+          uniqueReferencias.length === 0 ? (
+            <div className="d-empty">
+              <div className="d-empty__icon">📚</div>
+              <div className="d-empty__title">Sin referencias</div>
+              <div className="d-empty__text">No hay referencias para este artículo</div>
             </div>
           ) : (
             uniqueReferencias.map((referencia) => (
-              <article key={referencia.id} className="annotation-card">
-                <span className="annotation-badge annotation-badge--jurisprudencia">
+              <article key={referencia.id} className="d-annotation">
+                <span className="d-annotation__badge d-annotation__badge--jurisprudencia">
                   {referencia.tipoReferencia.nombre}
                 </span>
                 
-                <div className="ref-item" style={{ background: 'none', padding: 0, margin: 0 }}>
-                  <span className="ref-item__numero" style={{ fontSize: '1rem' }}>
-                    {referencia.numero}
-                  </span>
-                  {referencia.titulo && (
-                    <span className="ref-item__titulo">{referencia.titulo}</span>
-                  )}
+                <div style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '4px' }}>
+                  {referencia.numero}
                 </div>
                 
-                <div className="ref-item__links" style={{ marginTop: '0.75rem' }}>
+                {referencia.titulo && (
+                  <div style={{ fontSize: '0.9375rem', color: 'var(--d-gray-600)', marginBottom: '12px' }}>
+                    {referencia.titulo}
+                  </div>
+                )}
+                
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                   {referencia.urlNexus && (
-                    <a 
-                      href={referencia.urlNexus} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="ref-item__link"
-                    >
+                    <a href={referencia.urlNexus} target="_blank" rel="noopener noreferrer" className="d-ref-link">
                       Nexus PJ →
                     </a>
                   )}
                   {referencia.urlCatalogo && (
-                    <a 
-                      href={referencia.urlCatalogo} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="ref-item__link"
-                    >
+                    <a href={referencia.urlCatalogo} target="_blank" rel="noopener noreferrer" className="d-ref-link">
                       Catálogo →
                     </a>
                   )}
                   {referencia.urlRepositorio && (
-                    <a 
-                      href={referencia.urlRepositorio} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="ref-item__link"
-                    >
+                    <a href={referencia.urlRepositorio} target="_blank" rel="noopener noreferrer" className="d-ref-link">
                       Repositorio AL →
-                    </a>
-                  )}
-                  {referencia.urlPrincipal && 
-                    !referencia.urlNexus && 
-                    !referencia.urlCatalogo && 
-                    !referencia.urlRepositorio && (
-                    <a 
-                      href={referencia.urlPrincipal} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="ref-item__link"
-                    >
-                      Ver documento →
                     </a>
                   )}
                 </div>
               </article>
             ))
-          )}
-        </div>
-      )}
-    </aside>
+          )
+        )}
+      </div>
+    </>
   )
 }

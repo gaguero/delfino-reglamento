@@ -6,7 +6,7 @@ import Link from 'next/link'
 interface Articulo {
   numero: string
   nombre: string
-  orden: number
+  orden?: number
 }
 
 interface ArticleNavigationProps {
@@ -23,50 +23,48 @@ export default function ArticleNavigation({ articulos, currentNumero }: ArticleN
   )
 
   return (
-    <nav className="article-nav" aria-label="Navegación de artículos">
-      <h2 className="sidebar-title">Artículos del Reglamento</h2>
+    <>
+      <div className="d-nav__header">
+        <h2 className="d-nav__title">Índice de Artículos</h2>
+        <input
+          type="search"
+          placeholder="Buscar artículo..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="d-nav__search"
+        />
+      </div>
       
-      <input
-        type="search"
-        placeholder="Buscar artículo..."
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        className="article-nav__search"
-      />
-      
-      <ul className="article-nav__list">
+      <ul className="d-nav__list">
         {filteredArticulos.map((articulo) => (
-          <li key={articulo.numero} className="article-nav__item">
+          <li key={articulo.numero} className="d-nav__item">
             <Link
               href={`/articulo/${articulo.numero}`}
-              className={`article-nav__link ${
-                articulo.numero === currentNumero ? 'article-nav__link--active' : ''
+              className={`d-nav__link ${
+                articulo.numero === currentNumero ? 'd-nav__link--active' : ''
               }`}
             >
-              <span style={{ fontWeight: 600 }}>Art. {articulo.numero}</span>
-              <span style={{ 
-                display: 'block', 
+              <div style={{ fontWeight: 500 }}>Artículo {articulo.numero}</div>
+              <div style={{ 
                 fontSize: '0.8125rem', 
-                color: 'inherit', 
                 opacity: 0.8,
-                wordWrap: 'break-word',
-                overflowWrap: 'break-word',
-                lineHeight: 1.4,
-                marginTop: '2px'
+                marginTop: '2px',
+                lineHeight: 1.3
               }}>
                 {articulo.nombre}
-              </span>
+              </div>
             </Link>
           </li>
         ))}
         
         {filteredArticulos.length === 0 && (
-          <li className="empty-state">
-            <div className="empty-state__icon">🔍</div>
-            No se encontraron artículos
+          <li className="d-empty">
+            <div className="d-empty__icon">🔍</div>
+            <div className="d-empty__title">No encontrado</div>
+            <div className="d-empty__text">Prueba con otro término</div>
           </li>
         )}
       </ul>
-    </nav>
+    </>
   )
 }

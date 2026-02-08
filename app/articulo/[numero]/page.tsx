@@ -13,7 +13,6 @@ export default async function ArticuloPage({
 }) {
   const { numero } = await params
   
-  // Fetch current article with annotations
   const articulo = await prisma.articulo.findUnique({
     where: { numero },
     include: {
@@ -26,9 +25,7 @@ export default async function ArticuloPage({
           referencias: {
             include: {
               referencia: {
-                include: {
-                  tipoReferencia: true,
-                },
+                include: { tipoReferencia: true },
               },
             },
             orderBy: { orden: 'asc' },
@@ -42,29 +39,14 @@ export default async function ArticuloPage({
     notFound()
   }
 
-  // Fetch all articles for navigation
+  // Get all articles for nav
   const allArticulos = await prisma.articulo.findMany({
     where: { esVigente: true },
     orderBy: { orden: 'asc' },
-    select: { numero: true, nombre: true, orden: true },
+    select: { numero: true, nombre: true },
   })
 
-  // Clean textoLegal to remove title redundancy
-  // Remove article name from start of textoLegal if it appears there
-  let cleanedTextoLegal = articulo.textoLegal
-  const nombreLower = articulo.nombre.toLowerCase().trim()
-  const textoLower = articulo.textoLegal.toLowerCase().trim()
-  
-  // Check if textoLegal starts with the article name (with or without HTML tags)
-  if (textoLower.startsWith(nombreLower) || 
-      textoLower.startsWith('<p>' + nombreLower) ||
-      textoLower.startsWith('<div>' + nombreLower)) {
-    // Remove the article name and any following punctuation/whitespace
-    const regex = new RegExp('^(<[^>]+>)?\\s*' + articulo.nombre.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*[.:-]?\\s*', 'i')
-    cleanedTextoLegal = articulo.textoLegal.replace(regex, '')
-  }
-
-  // Get prev/next articles
+  // Get prev/next
   const [prevArticulo, nextArticulo] = await Promise.all([
     prisma.articulo.findFirst({
       where: { orden: { lt: articulo.orden }, esVigente: true },
@@ -78,112 +60,71 @@ export default async function ArticuloPage({
     }),
   ])
 
+  // Clean textoLegal - remove title if duplicated
+  let cleanedTexto = articulo.textoLegal
+  const nombreLower = articulo.nombre.toLowerCase().trim()
+  const textoLower = articulo.textoLegal.toLowerCase().trim()
+  
+  if (textoLower.startsWith(nombreLower) || textoLower.startsWith('<p>' + nombreLower)) {
+    const regex = new RegExp('^(<[^>]+>)?\\s*' + articulo.nombre.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*[.:-]?\\s*', 'i')
+    cleanedTexto = articulo.textoLegal.replace(regex, '')
+  }
+
   return (
-    <div className="min-h-screen flex flex-col">
+    <>
       {/* Header */}
-      <header className="site-header">
-        <div className="site-header__top">
-          <div className="container">
-            Delfino.cr — Periodismo de Datos
-          </div>
-        </div>
-        <div className="site-header__main">
-          <div className="container">
-            <Link href="/" className="site-header__logo">
-              DELFINO.CR
-              <span className="site-header__logo-subtitle">
-                Reglamento de la Asamblea Legislativa Anotado
-              </span>
-            </Link>
-          </div>
-        </div>
+      <header className="d-header">
+        <Link href="/" className="d-header__logo">
+          DELFINO.CR
+        </Link>
       </header>
 
-      {/* Main Layout */}
-      <div className="article-layout">
-        {/* Left Sidebar - Navigation */}
-        <aside className="article-layout__sidebar-left">
-          <ArticleNavigation 
-            articulos={allArticulos} 
-            currentNumero={numero} 
-          />
-        </aside>
+      <div className="d-layout">
+        {/* Left Navigation */}
+        <ArticleNavigation articulos={allArticulos} currentNumero={numero} />
 
-        {/* Center - Article Content */}
-        <main className="article-layout__content">
-          {/* Breadcrumb */}
-          <nav className="article-breadcrumb" aria-label="Breadcrumb">
-            <Link href="/">Inicio</Link>
-            <span>/</span>
-            <span>Artículo {articulo.numero}</span>
-          </nav>
+        {/* Main Content */}
+        <main className="d-main">
+          <article className="d-content">
+            {/* Breadcrumb */}
+            <nav className="d-article__breadcrumb">
+              <Link href="/">Inicio</Link>
+              <span>/</span>
+              <span>Artículo {articulo.numero}</span>
+            </nav>
 
-          {/* Article Header */}
-          <span className="article-category">Artículo {articulo.numero}</span>
-          <h1 className="article-title">{articulo.nombre}</h1>
+            {/* Article Header */}
+            <span className="d-article__number">Artículo {articulo.numero}</span>
+            <h1 className="d-article__title">{articulo.nombre}</h1>
 
-          {/* Legal Text */}
-          <article className="article-text">
-            <div dangerouslySetInnerHTML={{ __html: cleanedTextoLegal }} />
+            {/* Legal Text */}
+            <div 
+              className="d-article__text"
+              dangerouslySetInnerHTML={{ __html: cleanedTexto }}
+            />
+
+            {/* Navigation Footer */}
+            <nav className="d-nav-footer">
+              {prevArticulo ? (
+                <Link href={`/articulo/${prevArticulo.numero}`} className="d-nav-footer__link">
+                  <span className="d-nav-footer__label">← Anterior</span>
+                  <span className="d-nav-footer__title">Art. {prevArticulo.numero}</span>
+                </Link>
+              ) : <div />}
+              
+              {nextArticulo && (
+                <Link href={`/articulo/${nextArticulo.numero}`} className="d-nav-footer__link" style={{ textAlign: 'right' }}>
+                  <span className="d-nav-footer__label">Siguiente →</span>
+                  <span className="d-nav-footer__title">Art. {nextArticulo.numero}</span>
+                </Link>
+              )}
+            </nav>
           </article>
-
-          {/* Article Navigation Footer */}
-          <nav className="article-nav-footer" aria-label="Navegación entre artículos">
-            {prevArticulo ? (
-              <Link 
-                href={`/articulo/${prevArticulo.numero}`}
-                className="article-nav-footer__link"
-              >
-                <span>←</span>
-                <div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--delfino-text-tertiary)' }}>Anterior</div>
-                  <div>Art. {prevArticulo.numero}</div>
-                </div>
-              </Link>
-            ) : (
-              <span />
-            )}
-            
-            {nextArticulo && (
-              <Link 
-                href={`/articulo/${nextArticulo.numero}`}
-                className="article-nav-footer__link"
-              >
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--delfino-text-tertiary)' }}>Siguiente</div>
-                  <div>Art. {nextArticulo.numero}</div>
-                </div>
-                <span>→</span>
-              </Link>
-            )}
-          </nav>
         </main>
 
-        {/* Right Sidebar - Annotations */}
-        <aside className="article-layout__sidebar-right">
-          <ArticleAnnotations anotaciones={articulo.anotaciones} />
-        </aside>
+        {/* Right Annotations */}
+        <ArticleAnnotations anotaciones={articulo.anotaciones} />
       </div>
-
-      {/* Footer */}
-      <footer className="site-footer">
-        <div className="site-footer__content">
-          <div className="site-footer__links">
-            <a href="https://delfino.cr" target="_blank" rel="noopener noreferrer">
-              Delfino.cr
-            </a>
-            <a href="https://www.asamblea.go.cr/" target="_blank" rel="noopener noreferrer">
-              Asamblea Legislativa
-            </a>
-            <a href="https://www.pgrweb.go.cr/scij/" target="_blank" rel="noopener noreferrer">
-              SCIJ
-            </a>
-          </div>
-          <p className="site-footer__text">
-            Reglamento de la Asamblea Legislativa de Costa Rica — Anotado por Delfino.cr
-          </p>
-        </div>
-      </footer>
-    </div>
+    </>
   )
 }
