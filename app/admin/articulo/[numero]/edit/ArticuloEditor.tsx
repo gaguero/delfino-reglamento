@@ -68,6 +68,7 @@ export default function ArticuloEditor({ articulo, tiposAnotacion, referencias: 
   const [anotaciones, setAnotaciones] = useState<Anotacion[]>(articulo.anotaciones)
   const [referencias, setReferencias] = useState<Referencia[]>(allReferencias)
   const [showModal, setShowModal] = useState<'create' | 'edit' | 'delete' | 'ref-create' | null>(null)
+  const [parentModal, setParentModal] = useState<'create' | 'edit' | null>(null)
   const [editingAnotacion, setEditingAnotacion] = useState<Anotacion | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -393,7 +394,7 @@ export default function ArticuloEditor({ articulo, tiposAnotacion, referencias: 
                     <div>
                       <div className="flex justify-between items-center mb-2">
                         <label className="form-label">Referencias ({formRefIds.length} seleccionadas)</label>
-                        <button type="button" onClick={() => setShowModal('ref-create')} className="btn btn-ghost btn-sm">
+                        <button type="button" onClick={() => { setParentModal(showModal === 'create' ? 'create' : 'edit'); setShowModal('ref-create') }} className="btn btn-ghost btn-sm">
                           + Crear Referencia
                         </button>
                       </div>
@@ -427,7 +428,7 @@ export default function ArticuloEditor({ articulo, tiposAnotacion, referencias: 
               <>
                 <div className="modal-header">
                   <h3 className="modal-title">Nueva Referencia</h3>
-                  <button onClick={() => setShowModal(showModal === 'create' ? 'create' : 'edit')} className="modal-close">&times;</button>
+                  <button onClick={() => setShowModal(parentModal)} className="modal-close">&times;</button>
                 </div>
                 <div className="modal-body">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -468,7 +469,7 @@ export default function ArticuloEditor({ articulo, tiposAnotacion, referencias: 
                   {error && <p className="alert alert-error">{error}</p>}
 
                   <div className="modal-footer">
-                    <button onClick={() => setShowModal(showModal === 'create' ? 'create' : 'edit')} className="btn btn-secondary">Volver</button>
+                    <button onClick={() => setShowModal(parentModal)} className="btn btn-secondary">Volver</button>
                     <button onClick={handleCreateRef} disabled={loading || !refNumero} className="btn btn-primary">{loading ? 'Creando...' : 'Crear Referencia'}</button>
                   </div>
                 </div>
