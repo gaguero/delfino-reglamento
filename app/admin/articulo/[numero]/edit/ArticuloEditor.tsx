@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { auth } from '@/lib/auth'
-import { GeistSans } from '@/lib/fonts'
 import { cn } from '@/lib/utils'
 import AdminPageHeader from '@/app/admin/_components/AdminPageHeader'
 import RichTextEditor from '@/components/RichTextEditor'

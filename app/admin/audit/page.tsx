@@ -1,6 +1,4 @@
 import Link from 'next/link'
-import { GeistSans } from '@/lib/fonts'
-import { cn } from '@/lib/utils'
 import AdminPageHeader from '@/app/admin/_components/AdminPageHeader'
 import { auth } from '@/lib/auth' // Import auth
 

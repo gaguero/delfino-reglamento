@@ -1,8 +1,7 @@
-import { geistSans } from '@/lib/fonts' // Correctly import lowercase 'geistSans'
-import { geistMono } from '@/lib/fonts' // Correctly import lowercase 'geistMono'
+import { geistSans } from '@/lib/fonts'
+import { geistMono } from '@/lib/fonts'
 import './globals.css'
 import './delfino.css'
-import './fonts.css' // Ensure fonts.css applies the variables if not directly in layout.tsx
 
 export const metadata = {
   title: 'Reglamento Asamblea Legislativa CR',

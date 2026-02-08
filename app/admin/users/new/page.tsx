@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import AdminPageHeader from '../_components/AdminPageHeader'
+import AdminPageHeader from '@/app/admin/_components/AdminPageHeader'
 import { cn } from '@/lib/utils'
 
 export default function NewUserPage() {

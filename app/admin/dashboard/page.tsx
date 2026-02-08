@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { GeistSans } from '@/lib/fonts'
 import { cn } from '@/lib/utils'
 
 const STATS_DATA = [
