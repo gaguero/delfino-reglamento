@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import AdminPageHeader from '@/app/admin/_components/AdminPageHeader'
-import { auth } from '@/lib/auth' // Import auth
+import { auth } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
 
 export default async function AuditPage() { // Removed searchParams prop as it's handled differently in App Router
   const session = await auth()
