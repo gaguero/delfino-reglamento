@@ -15,11 +15,17 @@ export default async function AuditPage() { // Removed searchParams prop as it's
   // Fetching data directly in the Server Component
   // In a real app, you'd pass filters from the URL search params if available
   // For simplicity, fetching all logs here. Pagination and filtering would need URLSearchParams handling.
-  const auditLogs = await prisma.auditLog.findMany({
+  const rawAuditLogs = await prisma.auditLog.findMany({
     orderBy: { createdAt: 'desc' },
     include: { user: { select: { fullName: true, email: true } } },
     take: 50, // Sample: limiting for now
   })
+
+  // Serialize dates for client component
+  const auditLogs = rawAuditLogs.map(log => ({
+    ...log,
+    createdAt: log.createdAt.toISOString(),
+  }))
   const users = await prisma.user.findMany({ select: { id: true, fullName: true, email: true }, orderBy: { fullName: 'asc' } })
 
   return (
