@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { auth } from '@/lib/auth'
 import { cn } from '@/lib/utils'
 import AdminPageHeader from '@/app/admin/_components/AdminPageHeader'
