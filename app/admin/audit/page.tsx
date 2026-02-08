@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import AdminPageHeader from '@/app/admin/_components/AdminPageHeader'
+import AuditLogList from './AuditLogList'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
