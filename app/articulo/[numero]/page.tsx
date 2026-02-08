@@ -49,6 +49,21 @@ export default async function ArticuloPage({
     select: { numero: true, nombre: true, orden: true },
   })
 
+  // Clean textoLegal to remove title redundancy
+  // Remove article name from start of textoLegal if it appears there
+  let cleanedTextoLegal = articulo.textoLegal
+  const nombreLower = articulo.nombre.toLowerCase().trim()
+  const textoLower = articulo.textoLegal.toLowerCase().trim()
+  
+  // Check if textoLegal starts with the article name (with or without HTML tags)
+  if (textoLower.startsWith(nombreLower) || 
+      textoLower.startsWith('<p>' + nombreLower) ||
+      textoLower.startsWith('<div>' + nombreLower)) {
+    // Remove the article name and any following punctuation/whitespace
+    const regex = new RegExp('^(<[^>]+>)?\\s*' + articulo.nombre.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*[.:-]?\\s*', 'i')
+    cleanedTextoLegal = articulo.textoLegal.replace(regex, '')
+  }
+
   // Get prev/next articles
   const [prevArticulo, nextArticulo] = await Promise.all([
     prisma.articulo.findFirst({
@@ -109,7 +124,7 @@ export default async function ArticuloPage({
 
           {/* Legal Text */}
           <article className="article-text">
-            <div dangerouslySetInnerHTML={{ __html: articulo.textoLegal }} />
+            <div dangerouslySetInnerHTML={{ __html: cleanedTextoLegal }} />
           </article>
 
           {/* Article Navigation Footer */}

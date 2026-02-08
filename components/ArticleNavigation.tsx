@@ -44,8 +44,17 @@ export default function ArticleNavigation({ articulos, currentNumero }: ArticleN
               }`}
             >
               <span style={{ fontWeight: 600 }}>Art. {articulo.numero}</span>
-              <span style={{ display: 'block', fontSize: '0.8125rem', color: 'inherit', opacity: 0.8 }}>
-                {articulo.nombre.length > 50 ? articulo.nombre.slice(0, 50) + '...' : articulo.nombre}
+              <span style={{ 
+                display: 'block', 
+                fontSize: '0.8125rem', 
+                color: 'inherit', 
+                opacity: 0.8,
+                wordWrap: 'break-word',
+                overflowWrap: 'break-word',
+                lineHeight: 1.4,
+                marginTop: '2px'
+              }}>
+                {articulo.nombre}
               </span>
             </Link>
           </li>
