@@ -119,8 +119,8 @@ export default async function EditArticuloPage({
                               <span
                                 className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
                                 style={{
-                                  backgroundColor: anotacion.tipoAnotacion.colorHex + '20',
-                                  color: anotacion.tipoAnotacion.colorHex,
+                                  backgroundColor: (anotacion.tipoAnotacion.colorHex || '#3B82F6') + '20',
+                                  color: anotacion.tipoAnotacion.colorHex || '#3B82F6',
                                 }}
                               >
                                 {anotacion.tipoAnotacion.nombre}
