@@ -25,7 +25,7 @@ interface TwMerge {
 }
 
 // Mock implementation for twMerge and clsx if not available
-const twMerge: TwMerge = (t) => Array.isArray(t) ? t.join(' ') : t;
+const twMerge: TwMerge = (t) => Array.isArray(t) ? t.join(' ') : String(t);
 const clsx = (inputs: any[]): string => inputs.filter(Boolean).join(' ');
 
 // If you have actual installations of clsx and tailwind-merge, replace them:

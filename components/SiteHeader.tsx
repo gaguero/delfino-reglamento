@@ -1,6 +1,4 @@
 import Link from 'next/link'
-import { GeistSans } from '@/lib/fonts'
-import { cn } from '@/lib/utils'
 import { auth } from '@/lib/auth'
 
 export default async function SiteHeader() {
