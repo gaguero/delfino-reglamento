@@ -1,0 +1,543 @@
+/* ============================================
+   DELFINO.CR - CSS STYLESHEET
+   Costa Rican News Website Styling
+   ============================================ */
+
+/* ============================================
+   ROOT VARIABLES & RESET
+   ============================================ */
+
+:root {
+  /* Primary Colors */
+  --delfino-primary: #0066CC;
+  --delfino-primary-dark: #004C99;
+  --delfino-primary-light: #3385DB;
+
+  /* Accent Colors */
+  --delfino-accent: #FF6B35;
+  --delfino-accent-dark: #E55A2B;
+
+  /* Neutral Colors */
+  --delfino-text-primary: #1a1a1a;
+  --delfino-text-secondary: #4a4a4a;
+  --delfino-text-muted: #767676;
+  --delfino-background: #ffffff;
+  --delfino-background-alt: #f8f9fa;
+  --delfino-border: #e0e0e0;
+
+  /* Category Colors */
+  --delfino-jurisprudencia: #8B4789;
+  --delfino-contexto: #0066CC;
+  --delfino-nota: #2E7D32;
+  --delfino-reforma: #D84315;
+  --delfino-vigencia: #00796B;
+
+  /* Typography */
+  --delfino-font-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --delfino-font-heading: Georgia, 'Times New Roman', serif;
+
+  /* Spacing */
+  --delfino-spacing-xs: 0.25rem;
+  --delfino-spacing-sm: 0.5rem;
+  --delfino-spacing-md: 1rem;
+  --delfino-spacing-lg: 1.5rem;
+  --delfino-spacing-xl: 2rem;
+  --delfino-spacing-2xl: 3rem;
+
+  /* Layout */
+  --delfino-max-width: 1200px;
+  --delfino-border-radius: 8px;
+  --delfino-transition: all 0.3s ease;
+}
+
+/* ============================================
+   HEADER & NAVIGATION
+   ============================================ */
+
+.site-header {
+  background-color: var(--delfino-background);
+  border-bottom: 1px solid var(--delfino-border);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.header-top {
+  background-color: var(--delfino-primary);
+  color: white;
+  padding: var(--delfino-spacing-sm) 0;
+  font-size: 0.875rem;
+}
+
+.header-container {
+  max-width: var(--delfino-max-width);
+  margin: 0 auto;
+  padding: 0 var(--delfino-spacing-md);
+}
+
+.logo {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--delfino-primary);
+  text-decoration: none;
+  display: inline-block;
+  padding: var(--delfino-spacing-md) 0;
+}
+
+.logo-subtitle {
+  font-size: 0.75rem;
+  color: var(--delfino-text-muted);
+  font-weight: normal;
+  display: block;
+  margin-top: -0.25rem;
+}
+
+.main-nav {
+  display: flex;
+  gap: var(--delfino-spacing-lg);
+  padding: var(--delfino-spacing-md) 0;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.main-nav a {
+  color: var(--delfino-text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  padding: var(--delfino-spacing-sm) var(--delfino-spacing-md);
+  border-radius: var(--delfino-border-radius);
+  transition: var(--delfino-transition);
+}
+
+.main-nav a:hover,
+.main-nav a.active {
+  background-color: var(--delfino-background-alt);
+  color: var(--delfino-primary);
+}
+
+/* Quick Access Bar */
+.quick-access {
+  background-color: var(--delfino-background-alt);
+  padding: var(--delfino-spacing-sm) var(--delfino-spacing-md);
+  display: flex;
+  gap: var(--delfino-spacing-md);
+  overflow-x: auto;
+  scrollbar-width: thin;
+  border-top: 1px solid var(--delfino-border);
+}
+
+.quick-access a {
+  color: var(--delfino-text-secondary);
+  text-decoration: none;
+  white-space: nowrap;
+  font-size: 0.85rem;
+  padding: var(--delfino-spacing-xs) var(--delfino-spacing-sm);
+  border-radius: var(--delfino-border-radius);
+  transition: var(--delfino-transition);
+}
+
+.quick-access a:hover {
+  background-color: white;
+  color: var(--delfino-primary);
+}
+
+/* ============================================
+   MAIN CONTENT LAYOUT
+   ============================================ */
+
+.main-content {
+  max-width: var(--delfino-max-width);
+  margin: 0 auto;
+  padding: var(--delfino-spacing-xl) var(--delfino-spacing-md);
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--delfino-spacing-xl);
+  margin-bottom: var(--delfino-spacing-2xl);
+}
+
+/* ============================================
+   ARTICLE CARDS
+   ============================================ */
+
+.article-card {
+  background-color: var(--delfino-background);
+  border-radius: var(--delfino-border-radius);
+  overflow: hidden;
+  transition: var(--delfino-transition);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  text-decoration: none;
+  display: block;
+  color: inherit;
+}
+
+.article-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.article-content {
+  padding: var(--delfino-spacing-lg);
+}
+
+.article-category {
+  display: inline-block;
+  padding: var(--delfino-spacing-xs) var(--delfino-spacing-md);
+  background-color: var(--delfino-primary);
+  color: white;
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  border-radius: calc(var(--delfino-border-radius) / 2);
+  margin-bottom: var(--delfino-spacing-sm);
+  transition: var(--delfino-transition);
+  letter-spacing: 0.5px;
+}
+
+.article-title {
+  font-family: var(--delfino-font-heading);
+  font-size: 1.25rem;
+  line-height: 1.4;
+  margin-bottom: var(--delfino-spacing-sm);
+  color: var(--delfino-text-primary);
+  text-decoration: none;
+  display: block;
+  transition: var(--delfino-transition);
+}
+
+.article-card:hover .article-title {
+  color: var(--delfino-primary);
+}
+
+.article-numero {
+  font-size: 0.875rem;
+  color: var(--delfino-primary);
+  font-weight: 600;
+  margin-bottom: var(--delfino-spacing-xs);
+}
+
+/* ============================================
+   ARTICLE VIEWER
+   ============================================ */
+
+.article-viewer {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.article-viewer-header {
+  margin-bottom: var(--delfino-spacing-xl);
+  padding-bottom: var(--delfino-spacing-xl);
+  border-bottom: 2px solid var(--delfino-primary);
+}
+
+.article-viewer-header h1 {
+  font-family: var(--delfino-font-heading);
+  font-size: 2.5rem;
+  line-height: 1.2;
+  color: var(--delfino-text-primary);
+  margin-bottom: var(--delfino-spacing-sm);
+}
+
+.article-viewer-header h2 {
+  font-size: 1.25rem;
+  color: var(--delfino-text-secondary);
+  font-weight: normal;
+}
+
+.texto-legal {
+  background-color: var(--delfino-background-alt);
+  border-left: 4px solid var(--delfino-primary);
+  padding: var(--delfino-spacing-xl);
+  border-radius: 0 var(--delfino-border-radius) var(--delfino-border-radius) 0;
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: var(--delfino-text-primary);
+  white-space: pre-wrap;
+  margin-bottom: var(--delfino-spacing-2xl);
+}
+
+/* ============================================
+   ANNOTATIONS
+   ============================================ */
+
+.anotaciones-section {
+  margin-top: var(--delfino-spacing-2xl);
+}
+
+.anotaciones-section h3 {
+  font-family: var(--delfino-font-heading);
+  font-size: 1.5rem;
+  margin-bottom: var(--delfino-spacing-lg);
+  padding-bottom: var(--delfino-spacing-sm);
+  border-bottom: 1px solid var(--delfino-border);
+}
+
+.anotacion-card {
+  background-color: var(--delfino-background);
+  border-radius: var(--delfino-border-radius);
+  padding: var(--delfino-spacing-xl);
+  margin-bottom: var(--delfino-spacing-lg);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid var(--delfino-primary);
+}
+
+.anotacion-card.tipo-jurisprudencia {
+  border-left-color: var(--delfino-jurisprudencia);
+}
+
+.anotacion-card.tipo-contexto {
+  border-left-color: var(--delfino-contexto);
+}
+
+.anotacion-card.tipo-nota {
+  border-left-color: var(--delfino-nota);
+}
+
+.anotacion-tipo {
+  display: inline-block;
+  padding: var(--delfino-spacing-xs) var(--delfino-spacing-md);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  border-radius: calc(var(--delfino-border-radius) / 2);
+  margin-bottom: var(--delfino-spacing-md);
+  letter-spacing: 0.5px;
+  color: white;
+  background-color: var(--delfino-primary);
+}
+
+.anotacion-tipo.jurisprudencia { background-color: var(--delfino-jurisprudencia); }
+.anotacion-tipo.contexto { background-color: var(--delfino-contexto); }
+.anotacion-tipo.nota { background-color: var(--delfino-nota); }
+
+.anotacion-contenido {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--delfino-text-secondary);
+}
+
+.anotacion-contenido p {
+  margin-bottom: var(--delfino-spacing-md);
+}
+
+.anotacion-meta {
+  font-size: 0.8rem;
+  color: var(--delfino-text-muted);
+  margin-top: var(--delfino-spacing-md);
+  padding-top: var(--delfino-spacing-sm);
+  border-top: 1px solid var(--delfino-border);
+}
+
+/* ============================================
+   REFERENCES
+   ============================================ */
+
+.referencias-list {
+  margin-top: var(--delfino-spacing-md);
+  padding: var(--delfino-spacing-md);
+  background-color: var(--delfino-background-alt);
+  border-radius: var(--delfino-border-radius);
+}
+
+.referencias-list h5 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: var(--delfino-text-muted);
+  margin-bottom: var(--delfino-spacing-sm);
+  letter-spacing: 0.5px;
+}
+
+.referencia-item {
+  padding: var(--delfino-spacing-sm) 0;
+  border-bottom: 1px solid var(--delfino-border);
+}
+
+.referencia-item:last-child {
+  border-bottom: none;
+}
+
+.referencia-numero {
+  font-weight: 600;
+  color: var(--delfino-text-primary);
+}
+
+.referencia-links {
+  display: flex;
+  gap: var(--delfino-spacing-md);
+  margin-top: var(--delfino-spacing-xs);
+}
+
+.referencia-links a {
+  color: var(--delfino-primary);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: var(--delfino-transition);
+}
+
+.referencia-links a:hover {
+  color: var(--delfino-primary-dark);
+  text-decoration: underline;
+}
+
+/* ============================================
+   BACK LINK & NAVIGATION
+   ============================================ */
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--delfino-spacing-sm);
+  color: var(--delfino-primary);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: var(--delfino-spacing-xl);
+  transition: var(--delfino-transition);
+}
+
+.back-link:hover {
+  color: var(--delfino-primary-dark);
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+
+.site-footer {
+  background-color: var(--delfino-text-primary);
+  color: white;
+  padding: var(--delfino-spacing-2xl) var(--delfino-spacing-md);
+  margin-top: var(--delfino-spacing-2xl);
+}
+
+.footer-content {
+  max-width: var(--delfino-max-width);
+  margin: 0 auto;
+  text-align: center;
+}
+
+.footer-content p {
+  opacity: 0.8;
+  font-size: 0.875rem;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: var(--delfino-spacing-xl);
+  margin-bottom: var(--delfino-spacing-lg);
+  flex-wrap: wrap;
+}
+
+.footer-links a {
+  color: white;
+  text-decoration: none;
+  opacity: 0.8;
+  transition: var(--delfino-transition);
+  font-size: 0.9rem;
+}
+
+.footer-links a:hover {
+  opacity: 1;
+  color: var(--delfino-primary-light);
+}
+
+/* ============================================
+   SEARCH
+   ============================================ */
+
+.search-container {
+  max-width: 600px;
+  margin: 0 auto var(--delfino-spacing-2xl);
+}
+
+.search-input {
+  width: 100%;
+  padding: var(--delfino-spacing-md) var(--delfino-spacing-lg);
+  border: 2px solid var(--delfino-border);
+  border-radius: var(--delfino-border-radius);
+  font-size: 1rem;
+  transition: var(--delfino-transition);
+}
+
+.search-input:focus {
+  border-color: var(--delfino-primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 768px) {
+  .main-nav {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .article-viewer-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .texto-legal {
+    padding: var(--delfino-spacing-md);
+  }
+
+  .footer-links {
+    flex-direction: column;
+    gap: var(--delfino-spacing-md);
+  }
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+a:focus,
+button:focus,
+input:focus {
+  outline: 2px solid var(--delfino-primary);
+  outline-offset: 2px;
+}

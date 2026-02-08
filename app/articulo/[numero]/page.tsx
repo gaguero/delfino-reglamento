@@ -38,129 +38,159 @@ export default async function ArticuloPage({
     notFound()
   }
 
+  // Get prev/next articles for navigation
+  const [prevArticulo, nextArticulo] = await Promise.all([
+    prisma.articulo.findFirst({
+      where: { orden: { lt: articulo.orden } },
+      orderBy: { orden: 'desc' },
+      select: { numero: true, nombre: true },
+    }),
+    prisma.articulo.findFirst({
+      where: { orden: { gt: articulo.orden } },
+      orderBy: { orden: 'asc' },
+      select: { numero: true, nombre: true },
+    }),
+  ])
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
-        <div className="max-w-4xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-          <Link href="/" className="text-blue-600 hover:text-blue-800 text-sm">
-            ← Volver al índice
+    <div className="min-h-screen" style={{ fontFamily: 'var(--delfino-font-primary)' }}>
+      {/* Header */}
+      <header className="site-header">
+        <div className="header-top">
+          <div className="header-container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span>Delfino.cr - Periodismo de Datos</span>
+          </div>
+        </div>
+        <div className="header-container">
+          <Link href="/" className="logo">
+            Delfino.cr
+            <span className="logo-subtitle">Reglamento de la Asamblea Legislativa Anotado</span>
           </Link>
-          <h1 className="mt-2 text-3xl font-bold text-gray-900">
-            Artículo {articulo.numero}
-          </h1>
-          <h2 className="mt-1 text-xl text-gray-600">{articulo.nombre}</h2>
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <div className="bg-white shadow sm:rounded-lg p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Texto Legal</h3>
-            <div className="prose max-w-none text-gray-700 whitespace-pre-wrap">
-              {articulo.textoLegal}
-            </div>
+      {/* Main Content */}
+      <main className="main-content">
+        <div className="article-viewer fade-in">
+          <Link href="/" className="back-link">
+            ← Volver al índice
+          </Link>
+
+          <div className="article-viewer-header">
+            <span className="article-category">Artículo {articulo.numero}</span>
+            <h1>{articulo.nombre}</h1>
           </div>
 
+          {/* Legal Text */}
+          <div className="texto-legal">{articulo.textoLegal}</div>
+
+          {/* Annotations */}
           {articulo.anotaciones.length > 0 && (
-            <div className="mt-8">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Anotaciones</h3>
-              <div className="space-y-6">
-                {articulo.anotaciones.map((anotacion) => (
-                  <div
-                    key={anotacion.id}
-                    className="bg-white shadow sm:rounded-lg p-6 border-l-4"
-                    style={{
-                      borderLeftColor: anotacion.tipoAnotacion.colorHex || '#3B82F6',
-                    }}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <h4 className="text-sm font-medium text-gray-900">
-                          {anotacion.tipoAnotacion.nombre}
-                        </h4>
-                        <div
-                          className="mt-2 prose max-w-none text-gray-700"
-                          dangerouslySetInnerHTML={{ __html: anotacion.contenido }}
-                        />
+            <div className="anotaciones-section">
+              <h3>Anotaciones ({articulo.anotaciones.length})</h3>
+              {articulo.anotaciones.map((anotacion) => {
+                const tipoSlug = anotacion.tipoAnotacion.nombre.toLowerCase()
+                const cardClass = `anotacion-card ${
+                  tipoSlug.includes('jurisprudencia') ? 'tipo-jurisprudencia' :
+                  tipoSlug.includes('contexto') ? 'tipo-contexto' :
+                  tipoSlug.includes('nota') ? 'tipo-nota' : ''
+                }`
+                const badgeClass = `anotacion-tipo ${
+                  tipoSlug.includes('jurisprudencia') ? 'jurisprudencia' :
+                  tipoSlug.includes('contexto') ? 'contexto' :
+                  tipoSlug.includes('nota') ? 'nota' : ''
+                }`
 
-                        {anotacion.referencias.length > 0 && (
-                          <div className="mt-4">
-                            <h5 className="text-sm font-medium text-gray-700 mb-2">
-                              Referencias:
-                            </h5>
-                            <ul className="space-y-2">
-                              {anotacion.referencias.map(({ referencia }) => (
-                                <li key={referencia.id} className="text-sm">
-                                  <span className="font-medium text-gray-900">
-                                    {referencia.tipoReferencia.nombre} {referencia.numero}
-                                  </span>
-                                  {referencia.titulo && (
-                                    <span className="text-gray-600"> - {referencia.titulo}</span>
-                                  )}
-                                  <div className="mt-1 space-x-3">
-                                    {referencia.urlNexus && (
-                                      <a
-                                        href={referencia.urlNexus}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-blue-600 hover:text-blue-800"
-                                      >
-                                        Nexus PJ
-                                      </a>
-                                    )}
-                                    {referencia.urlCatalogo && (
-                                      <a
-                                        href={referencia.urlCatalogo}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-blue-600 hover:text-blue-800"
-                                      >
-                                        Catálogo
-                                      </a>
-                                    )}
-                                    {referencia.urlRepositorio && (
-                                      <a
-                                        href={referencia.urlRepositorio}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-blue-600 hover:text-blue-800"
-                                      >
-                                        Repositorio AL
-                                      </a>
-                                    )}
-                                    {referencia.urlPrincipal &&
-                                      !referencia.urlNexus &&
-                                      !referencia.urlCatalogo &&
-                                      !referencia.urlRepositorio && (
-                                        <a
-                                          href={referencia.urlPrincipal}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                          className="text-blue-600 hover:text-blue-800"
-                                        >
-                                          Ver documento
-                                        </a>
-                                      )}
-                                  </div>
-                                </li>
-                              ))}
-                            </ul>
+                return (
+                  <div key={anotacion.id} className={cardClass}>
+                    <span className={badgeClass}>
+                      {anotacion.tipoAnotacion.nombre}
+                    </span>
+                    <div
+                      className="anotacion-contenido"
+                      dangerouslySetInnerHTML={{ __html: anotacion.contenido }}
+                    />
+
+                    {anotacion.referencias.length > 0 && (
+                      <div className="referencias-list">
+                        <h5>Referencias</h5>
+                        {anotacion.referencias.map(({ referencia }) => (
+                          <div key={referencia.id} className="referencia-item">
+                            <span className="referencia-numero">
+                              {referencia.tipoReferencia.nombre} {referencia.numero}
+                            </span>
+                            {referencia.titulo && (
+                              <span style={{ color: 'var(--delfino-text-secondary)', fontSize: '0.9rem' }}>
+                                {' '}- {referencia.titulo}
+                              </span>
+                            )}
+                            <div className="referencia-links">
+                              {referencia.urlNexus && (
+                                <a href={referencia.urlNexus} target="_blank" rel="noopener noreferrer">
+                                  Nexus PJ
+                                </a>
+                              )}
+                              {referencia.urlCatalogo && (
+                                <a href={referencia.urlCatalogo} target="_blank" rel="noopener noreferrer">
+                                  Catálogo
+                                </a>
+                              )}
+                              {referencia.urlRepositorio && (
+                                <a href={referencia.urlRepositorio} target="_blank" rel="noopener noreferrer">
+                                  Repositorio AL
+                                </a>
+                              )}
+                              {referencia.urlPrincipal &&
+                                !referencia.urlNexus &&
+                                !referencia.urlCatalogo &&
+                                !referencia.urlRepositorio && (
+                                  <a href={referencia.urlPrincipal} target="_blank" rel="noopener noreferrer">
+                                    Ver documento
+                                  </a>
+                                )}
+                            </div>
                           </div>
-                        )}
-
-                        <p className="mt-3 text-xs text-gray-500">
-                          Añadido por {anotacion.createdBy.fullName} el{' '}
-                          {new Date(anotacion.createdAt).toLocaleDateString('es-CR')}
-                        </p>
+                        ))}
                       </div>
+                    )}
+
+                    <div className="anotacion-meta">
+                      Añadido por {anotacion.createdBy.fullName} el{' '}
+                      {new Date(anotacion.createdAt).toLocaleDateString('es-CR')}
                     </div>
                   </div>
-                ))}
-              </div>
+                )
+              })}
             </div>
           )}
+
+          {/* Article Navigation */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '3rem', paddingTop: '1.5rem', borderTop: '1px solid var(--delfino-border)' }}>
+            {prevArticulo ? (
+              <Link href={`/articulo/${prevArticulo.numero}`} className="back-link">
+                ← Art. {prevArticulo.numero}
+              </Link>
+            ) : <span />}
+            {nextArticulo && (
+              <Link href={`/articulo/${nextArticulo.numero}`} className="back-link">
+                Art. {nextArticulo.numero} →
+              </Link>
+            )}
+          </div>
         </div>
       </main>
+
+      {/* Footer */}
+      <footer className="site-footer">
+        <div className="footer-content">
+          <div className="footer-links">
+            <a href="https://delfino.cr" target="_blank" rel="noopener noreferrer">Delfino.cr</a>
+            <a href="https://www.asamblea.go.cr/" target="_blank" rel="noopener noreferrer">Asamblea Legislativa</a>
+            <a href="https://www.pgrweb.go.cr/scij/" target="_blank" rel="noopener noreferrer">SCIJ</a>
+          </div>
+          <p>Reglamento de la Asamblea Legislativa de Costa Rica — Anotado por Delfino.cr</p>
+        </div>
+      </footer>
     </div>
   )
 }
