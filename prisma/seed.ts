@@ -1,9 +1,18 @@
 import { PrismaClient } from '@prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { hash } from 'bcryptjs'
+import { readFileSync } from 'fs'
+import { join } from 'path'
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
 const prisma = new PrismaClient({ adapter })
+
+interface ArticleData {
+  numero: string
+  nombre: string
+  textoLegal: string
+  orden: number
+}
 
 async function main() {
   console.log('Starting seed...')
@@ -12,73 +21,64 @@ async function main() {
   const tipoVoto = await prisma.tipoReferencia.upsert({
     where: { nombre: 'Voto' },
     update: {},
-    create: {
-      nombre: 'Voto',
-      descripcion: 'Voto de la Sala Constitucional',
-    },
+    create: { nombre: 'Voto', descripcion: 'Voto de la Sala Constitucional' },
   })
 
-  const tipoActa = await prisma.tipoReferencia.upsert({
+  await prisma.tipoReferencia.upsert({
     where: { nombre: 'Acta' },
     update: {},
-    create: {
-      nombre: 'Acta',
-      descripcion: 'Acta de sesión plenaria',
-    },
+    create: { nombre: 'Acta', descripcion: 'Acta de sesión plenaria' },
   })
 
-  const tipoLey = await prisma.tipoReferencia.upsert({
+  await prisma.tipoReferencia.upsert({
     where: { nombre: 'Ley' },
     update: {},
-    create: {
-      nombre: 'Ley',
-      descripcion: 'Ley de la República',
-    },
+    create: { nombre: 'Ley', descripcion: 'Ley de la República' },
+  })
+
+  await prisma.tipoReferencia.upsert({
+    where: { nombre: 'Resolución' },
+    update: {},
+    create: { nombre: 'Resolución', descripcion: 'Resolución de la Sala Constitucional' },
   })
 
   console.log('Tipos de referencia creados')
 
   // Create tipos de anotación
-  const tipoContexto = await prisma.tipoAnotacion.upsert({
+  await prisma.tipoAnotacion.upsert({
     where: { nombre: 'Contexto' },
     update: {},
-    create: {
-      nombre: 'Contexto',
-      colorHex: '#3B82F6',
-      icono: 'info',
-    },
+    create: { nombre: 'Contexto', colorHex: '#3B82F6', icono: 'info' },
   })
 
-  const tipoJurisprudencia = await prisma.tipoAnotacion.upsert({
+  await prisma.tipoAnotacion.upsert({
     where: { nombre: 'Jurisprudencia' },
     update: {},
-    create: {
-      nombre: 'Jurisprudencia',
-      colorHex: '#8B5CF6',
-      icono: 'gavel',
-    },
+    create: { nombre: 'Jurisprudencia', colorHex: '#8B5CF6', icono: 'gavel' },
   })
 
-  const tipoNota = await prisma.tipoAnotacion.upsert({
+  await prisma.tipoAnotacion.upsert({
     where: { nombre: 'Nota Editorial' },
     update: {},
-    create: {
-      nombre: 'Nota Editorial',
-      colorHex: '#10B981',
-      icono: 'edit',
-    },
+    create: { nombre: 'Nota Editorial', colorHex: '#10B981', icono: 'edit' },
+  })
+
+  await prisma.tipoAnotacion.upsert({
+    where: { nombre: 'Reforma' },
+    update: {},
+    create: { nombre: 'Reforma', colorHex: '#EF4444', icono: 'alert' },
   })
 
   console.log('Tipos de anotación creados')
 
   // Create master user
   const masterPassword = await hash('ChangeMe2024!', 12)
-  const masterUser = await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { email: 'gagueromesen@gmail.com' },
     update: {},
     create: {
       email: 'gagueromesen@gmail.com',
-      fullName: 'Gabriel Güero Mesén',
+      fullName: 'Gabriel Agüero Mesén',
       passwordHash: masterPassword,
       role: 'ADMIN',
       isActive: true,
@@ -87,50 +87,40 @@ async function main() {
 
   console.log('Master user created')
 
-  // Create sample articles
-  const articulo1 = await prisma.articulo.upsert({
-    where: { numero: '1' },
-    update: {},
-    create: {
-      numero: '1',
-      nombre: 'De la facultad de darse su reglamento',
-      textoLegal:
-        'Artículo 1.- La Asamblea Legislativa se dará su propio reglamento de conformidad con lo dispuesto en el artículo 121, inciso 1), de la Constitución Política.',
-      esVigente: true,
-      orden: 1,
-    },
-  })
+  // Load articles from JSON
+  const articlesPath = join(__dirname, '..', 'data', 'reglamento-articles.json')
+  const articlesData: ArticleData[] = JSON.parse(readFileSync(articlesPath, 'utf-8'))
 
-  const articulo2 = await prisma.articulo.upsert({
-    where: { numero: '2' },
-    update: {},
-    create: {
-      numero: '2',
-      nombre: 'De su objeto',
-      textoLegal:
-        'Artículo 2.- El presente Reglamento tiene por objeto regular el funcionamiento de la Asamblea Legislativa y garantizar el pleno ejercicio de sus funciones constitucionales.',
-      esVigente: true,
-      orden: 2,
-    },
-  })
+  console.log(`Loading ${articlesData.length} articles from JSON...`)
 
-  console.log('Sample articles created')
+  let created = 0
+  let skipped = 0
 
-  // Create sample annotation
-  await prisma.anotacion.create({
-    data: {
-      articuloId: articulo1.id,
-      tipoAnotacionId: tipoContexto.id,
-      contenido:
-        '<p>Este artículo establece la autonomía constitucional de la Asamblea Legislativa para darse su propio reglamento, sin intervención de otros poderes del Estado.</p>',
-      orden: 1,
-      esVisible: true,
-      createdById: masterUser.id,
-    },
-  })
+  for (const article of articlesData) {
+    try {
+      await prisma.articulo.upsert({
+        where: { numero: article.numero },
+        update: {
+          nombre: article.nombre,
+          textoLegal: article.textoLegal,
+          orden: article.orden,
+        },
+        create: {
+          numero: article.numero,
+          nombre: article.nombre,
+          textoLegal: article.textoLegal,
+          esVigente: true,
+          orden: article.orden,
+        },
+      })
+      created++
+    } catch (e: any) {
+      console.error(`Error with article ${article.numero}: ${e.message}`)
+      skipped++
+    }
+  }
 
-  console.log('Sample annotation created')
-
+  console.log(`Articles: ${created} created/updated, ${skipped} skipped`)
   console.log('Seed completed successfully!')
 }
 
