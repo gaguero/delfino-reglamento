@@ -187,69 +187,79 @@
   
   .d-content {
     width: 100%;
-    max-width: 720px;
-    background-color: var(--d-white);
-    border-radius: 12px;
-    padding: var(--space-10) var(--space-12);
-    box-shadow: var(--shadow-sm);
+    max-width: 800px;
+    background-color: transparent;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
   }
-  
+
   /* Article Header */
   .d-article__breadcrumb {
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    margin-bottom: var(--space-6);
+    margin-bottom: var(--space-8);
     font-size: 0.875rem;
     color: var(--d-gray-500);
   }
-  
+
   .d-article__breadcrumb a {
     color: var(--d-gray-500);
     text-decoration: none;
     transition: color 0.15s;
   }
-  
+
   .d-article__breadcrumb a:hover {
     color: var(--d-red);
   }
-  
+
   .d-article__number {
     display: inline-flex;
     align-items: center;
-    padding: var(--space-1) var(--space-3);
+    padding: 0.5rem 1rem;
     background-color: var(--d-red);
     color: var(--d-white);
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-size: 0.7rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    border-radius: 4px;
-    margin-bottom: var(--space-4);
+    letter-spacing: 0.08em;
+    border-radius: 6px;
+    margin-bottom: var(--space-6);
   }
-  
+
   .d-article__title {
-    font-size: 1.875rem;
+    font-size: 2.5rem;
     font-weight: 700;
     line-height: 1.3;
     color: var(--d-gray-900);
-    margin-bottom: var(--space-8);
+    margin-bottom: var(--space-10);
+    letter-spacing: -0.02em;
   }
-  
+
   .d-article__text {
     font-family: var(--font-serif);
-    font-size: 1.125rem;
-    line-height: 1.8;
+    font-size: 1.0625rem;
+    line-height: 1.9;
     color: var(--d-gray-800);
+    background-color: #f9f7f4;
+    padding: 2rem;
+    border-left: 5px solid var(--d-red);
+    border-radius: 4px;
+    margin-bottom: 3rem;
   }
-  
+
   .d-article__text p {
     margin-bottom: var(--space-6);
+  }
+
+  .d-article__text p:last-child {
+    margin-bottom: 0;
   }
   
   /* Annotations Panel */
   .d-annotations {
-    width: 360px;
+    width: 400px;
     background-color: var(--d-white);
     border-left: 1px solid var(--d-gray-200);
     height: calc(100vh - 64px);
@@ -259,6 +269,7 @@
     display: flex;
     flex-direction: column;
     z-index: 40;
+    box-shadow: -2px 0 8px rgba(0,0,0,0.08);
   }
   
   .d-annotations__header {
@@ -299,60 +310,67 @@
   
   /* Annotation Card */
   .d-annotation {
-    background-color: var(--d-white);
-    border: 1px solid var(--d-gray-200);
+    background-color: #fafafa;
+    border: 1px solid #e5e7eb;
+    border-left: 4px solid var(--d-red);
     border-radius: 8px;
-    padding: var(--space-4);
-    margin-bottom: var(--space-4);
-    transition: box-shadow 0.15s;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    transition: all 0.2s ease;
   }
-  
+
   .d-annotation:hover {
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 4px 12px rgba(220, 20, 60, 0.1);
+    background-color: #fff;
   }
-  
+
   .d-annotation__badge {
     display: inline-flex;
-    padding: var(--space-1) var(--space-2);
-    font-size: 0.6875rem;
-    font-weight: 600;
+    align-items: center;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.65rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.03em;
-    border-radius: 4px;
+    letter-spacing: 0.05em;
+    border-radius: 6px;
     margin-bottom: var(--space-3);
   }
-  
+
   .d-annotation__badge--jurisprudencia {
-    background-color: var(--d-gray-800);
-    color: var(--d-white);
+    background-color: #e5e7eb;
+    color: #374151;
   }
-  
+
   .d-annotation__badge--contexto {
-    background-color: var(--d-gray-200);
-    color: var(--d-gray-700);
+    background-color: #fef3f2;
+    color: #9f1239;
   }
-  
+
   .d-annotation__badge--nota {
-    background-color: var(--d-red-light);
-    color: var(--d-red);
+    background-color: #fce4e8;
+    color: #be185d;
   }
-  
+
   .d-annotation__content {
-    font-size: 0.9375rem;
-    line-height: 1.6;
-    color: var(--d-gray-700);
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: #4b5563;
   }
-  
+
   .d-annotation__content p {
     margin-bottom: var(--space-3);
   }
-  
+
+  .d-annotation__content p:last-child {
+    margin-bottom: 0;
+  }
+
   .d-annotation__meta {
-    font-size: 0.75rem;
-    color: var(--d-gray-400);
-    margin-top: var(--space-4);
+    font-size: 0.7rem;
+    color: #9ca3af;
+    margin-top: var(--space-3);
     padding-top: var(--space-3);
-    border-top: 1px solid var(--d-gray-100);
+    border-top: 1px solid #f3f4f6;
   }
   
   /* Reference Links */

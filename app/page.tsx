@@ -132,12 +132,13 @@ export default async function Home() {
           </div>
         </div>
 
-        {/* Articles Grid */}
+        {/* Articles Grid - 3 Columns */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-          gap: '1.5rem',
-          marginTop: '2rem'
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: '2rem',
+          marginTop: '2rem',
+          marginBottom: '3rem'
         }}>
           {articulos.map((articulo) => (
             <Link
@@ -146,48 +147,69 @@ export default async function Home() {
               style={{
                 textDecoration: 'none',
                 backgroundColor: 'white',
-                border: '1px solid var(--delfino-border)',
-                borderRadius: '8px',
-                padding: '1.5rem',
-                transition: 'all 0.2s ease',
-                display: 'block'
+                border: '1px solid #e5e7eb',
+                borderRadius: '12px',
+                padding: '2rem',
+                transition: 'all 0.3s ease',
+                display: 'flex',
+                flexDirection: 'column',
+                height: '100%',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                cursor: 'pointer',
+                minHeight: '280px'
               }}
               className="article-card-home"
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = '0 12px 24px rgba(220, 20, 60, 0.15)'
+                e.currentTarget.style.borderColor = 'var(--delfino-primary)'
+                e.currentTarget.style.transform = 'translateY(-4px)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.05)'
+                e.currentTarget.style.borderColor = '#e5e7eb'
+                e.currentTarget.style.transform = 'translateY(0)'
+              }}
             >
               <div style={{
-                display: 'inline-block',
+                display: 'inline-flex',
                 backgroundColor: 'var(--delfino-primary)',
                 color: 'white',
-                padding: '0.375rem 0.75rem',
-                borderRadius: '4px',
-                fontSize: '0.75rem',
+                padding: '0.5rem 1rem',
+                borderRadius: '6px',
+                fontSize: '0.7rem',
                 fontWeight: 700,
-                marginBottom: '1rem',
+                marginBottom: '1.25rem',
                 textTransform: 'uppercase',
-                letterSpacing: '0.05em'
+                letterSpacing: '0.08em',
+                width: 'fit-content'
               }}>
                 Artículo {articulo.numero}
               </div>
 
               <h3 style={{
-                fontSize: '1.125rem',
-                fontWeight: 600,
+                fontSize: '1.25rem',
+                fontWeight: 700,
                 color: 'var(--delfino-text-primary)',
-                marginBottom: '0.75rem',
-                lineHeight: 1.4
+                marginBottom: '1rem',
+                lineHeight: 1.5,
+                flex: '1'
               }}>
                 {articulo.nombre}
               </h3>
 
               {articulo.anotaciones.length > 0 && (
                 <div style={{
-                  fontSize: '0.875rem',
-                  color: 'var(--delfino-text-muted)',
+                  marginTop: 'auto',
+                  paddingTop: '1rem',
+                  borderTop: '1px solid #f3f4f6',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.5rem'
+                  gap: '0.5rem',
+                  fontSize: '0.875rem',
+                  color: 'var(--delfino-primary)',
+                  fontWeight: 600
                 }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
                   </svg>
                   {articulo.anotaciones.length} anotación{articulo.anotaciones.length !== 1 ? 'es' : ''}
