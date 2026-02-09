@@ -36,7 +36,6 @@ async function scrapeVotos(): Promise<void> {
         '--disable-dev-shm-usage',
         '--disable-gpu'
       ],
-      ignoreHTTPSErrors: true,
     })
 
     const page = await browser.newPage()
