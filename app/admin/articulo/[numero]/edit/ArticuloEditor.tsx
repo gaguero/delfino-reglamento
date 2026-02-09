@@ -47,6 +47,8 @@ interface Anotacion {
   createdAt: string
   updatedAt: string
   referencias: AnotacionRef[]
+  fuenteIA?: boolean
+  esAprobada?: boolean
 }
 
 interface Articulo {
@@ -278,7 +280,7 @@ export default function ArticuloEditor({ articulo, tiposAnotacion, referencias: 
                   <div key={anotacion.id} className={cn('border rounded-lg p-4 hover:bg-gray-50', `border-l-4 ${anotacion.tipoAnotacion.colorHex ? '' : 'border-primary-600'}`)} style={{ borderLeftColor: anotacion.tipoAnotacion.colorHex || 'var(--delfino-primary)' }}>
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
+                        <div className="flex items-center gap-2 mb-2 flex-wrap">
                           <span
                             className="badge"
                             style={{
@@ -288,6 +290,28 @@ export default function ArticuloEditor({ articulo, tiposAnotacion, referencias: 
                           >
                             {anotacion.tipoAnotacion.nombre}
                           </span>
+                          {anotacion.fuenteIA && (
+                            <span className="badge" style={{
+                              backgroundColor: '#f3f0ff',
+                              color: '#7c3aed',
+                              fontSize: '0.6875rem',
+                              fontWeight: 600,
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px'
+                            }}>
+                              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                              </svg>
+                              IA
+                            </span>
+                          )}
+                          {anotacion.fuenteIA && !anotacion.esAprobada && (
+                            <span className="badge badge-warning">Pendiente</span>
+                          )}
+                          {anotacion.fuenteIA && anotacion.esAprobada && (
+                            <span className="badge" style={{ backgroundColor: '#dcfce7', color: '#16a34a' }}>Aprobada</span>
+                          )}
                           <span className="text-xs text-gray-500">Orden: {anotacion.orden}</span>
                           {!anotacion.esVisible && (
                             <span className="badge badge-error">Oculta</span>
