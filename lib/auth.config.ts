@@ -63,7 +63,9 @@ export default {
       const isOnLogin = nextUrl.pathname.startsWith('/admin/login')
 
       if (isOnAdmin && !isOnLogin) {
-        if (!isLoggedIn) return false
+        if (!isLoggedIn) {
+          return Response.redirect(new URL('/admin/login', nextUrl))
+        }
         return true
       }
 
