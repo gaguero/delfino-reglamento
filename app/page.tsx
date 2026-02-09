@@ -159,16 +159,6 @@ export default async function Home() {
                 minHeight: '280px'
               }}
               className="article-card-home"
-              onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = '0 12px 24px rgba(220, 20, 60, 0.15)'
-                e.currentTarget.style.borderColor = 'var(--delfino-primary)'
-                e.currentTarget.style.transform = 'translateY(-4px)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.05)'
-                e.currentTarget.style.borderColor = '#e5e7eb'
-                e.currentTarget.style.transform = 'translateY(0)'
-              }}
             >
               <div style={{
                 display: 'inline-flex',
