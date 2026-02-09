@@ -2,9 +2,15 @@ import Link from 'next/link'
 import { geistSans } from '@/lib/fonts'
 import { cn } from '@/lib/utils'
 import { auth } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
 
 export default async function AdminHeader() {
   const session = await auth()
+
+  // Get pending AI review count
+  const pendingCount = await prisma.anotacion.count({
+    where: { fuenteIA: true, esAprobada: false, esVisible: true }
+  })
 
   return (
     <nav className="admin-nav">
@@ -20,6 +26,9 @@ export default async function AdminHeader() {
           {session?.user?.role === 'ADMIN' && <NavLink href="/admin/users" label="Usuarios" />}
           <NavLink href="/admin/audit" label="Auditoría" />
           <NavLink href="/admin/articles" label="Artículos" />
+          <NavLink href="/admin/votos" label="Votos" />
+          <NavLink href="/admin/actas" label="Actas" />
+          <NavLink href="/admin/revisiones" label={`Revisiones IA${pendingCount > 0 ? ` (${pendingCount})` : ''}`} />
         </div>
         <div className="admin-nav-user">
           {session?.user?.email && <span className="admin-nav-email">{session.user.email}</span>}

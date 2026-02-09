@@ -9,11 +9,11 @@
    ============================================ */
 
 :root {
-  /* Primary Colors - Delfino Brand */
-  --delfino-primary: #0066CC;
-  --delfino-primary-dark: #004C99;
-  --delfino-primary-light: #3385DB;
-  --delfino-primary-lighter: #E6F0FA;
+  /* Primary Colors - Delfino Brand (matching delfino.cr) */
+  --delfino-primary: #dc143c;
+  --delfino-primary-dark: #b01030;
+  --delfino-primary-light: #e84363;
+  --delfino-primary-lighter: #fce4e8;
 
   /* Accent Colors */
   --delfino-accent: #FF6B35;

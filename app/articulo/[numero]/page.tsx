@@ -17,7 +17,7 @@ export default async function ArticuloPage({
     where: { numero },
     include: {
       anotaciones: {
-        where: { esVisible: true },
+        where: { esVisible: true, esAprobada: true },
         orderBy: { orden: 'asc' },
         include: {
           tipoAnotacion: true,

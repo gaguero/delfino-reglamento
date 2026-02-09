@@ -2,8 +2,8 @@
 
 /* Delfino Legal Reader - Clean Design System */
 :root {
-  /* Colors - Softer, professional palette */
-  --d-red: #C41E3A;
+  /* Colors - Softer, professional palette (matching delfino.cr) */
+  --d-red: #dc143c;
   --d-red-light: #FFE4E8;
   --d-black: #1A1A1A;
   --d-white: #FFFFFF;

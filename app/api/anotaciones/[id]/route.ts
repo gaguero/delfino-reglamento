@@ -91,6 +91,65 @@ export async function PUT(
   return NextResponse.json(anotacion)
 }
 
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await auth()
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+  }
+
+  const { id } = await params
+  const body = await req.json()
+
+  // If approving
+  if (body.esAprobada === true) {
+    const updated = await prisma.anotacion.update({
+      where: { id },
+      data: {
+        esAprobada: true,
+        aprobadoPorId: session.user.id,
+        fechaAprobacion: new Date(),
+      }
+    })
+
+    await prisma.auditLog.create({
+      data: {
+        userId: session.user.id,
+        actionType: 'APPROVE',
+        entityType: 'anotaciones',
+        entityId: id,
+        newValues: { esAprobada: true }
+      }
+    })
+
+    return NextResponse.json(updated)
+  }
+
+  // If rejecting (hiding)
+  if (body.esVisible === false) {
+    const updated = await prisma.anotacion.update({
+      where: { id },
+      data: { esVisible: false }
+    })
+
+    await prisma.auditLog.create({
+      data: {
+        userId: session.user.id,
+        actionType: 'REJECT',
+        entityType: 'anotaciones',
+        entityId: id,
+        newValues: { esVisible: false }
+      }
+    })
+
+    return NextResponse.json(updated)
+  }
+
+  return NextResponse.json({ error: 'Invalid operation' }, { status: 400 })
+}
+
 export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }

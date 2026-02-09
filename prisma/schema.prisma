@@ -22,6 +22,7 @@ model User {
   // Relations
   createdAnnotations   Anotacion[] @relation("CreatedAnnotations")
   updatedAnnotations   Anotacion[] @relation("UpdatedAnnotations")
+  approvedAnnotations  Anotacion[] @relation("ApprovedAnnotations")
   verifiedReferences   Referencia[]
   auditLogs            AuditLog[]
 
@@ -108,11 +109,18 @@ model Anotacion {
   updatedAt        DateTime @updatedAt @map("updated_at")
   updatedById      String?  @map("updated_by")
 
+  // AI annotation review workflow
+  fuenteIA         Boolean  @default(false) @map("fuente_ia")
+  esAprobada       Boolean  @default(true)  @map("es_aprobada")
+  aprobadoPorId    String?  @map("aprobado_por")
+  fechaAprobacion  DateTime? @map("fecha_aprobacion")
+
   // Relations
   articulo         Articulo       @relation(fields: [articuloId], references: [id], onDelete: Cascade)
   tipoAnotacion    TipoAnotacion  @relation(fields: [tipoAnotacionId], references: [id])
   createdBy        User           @relation("CreatedAnnotations", fields: [createdById], references: [id])
   updatedBy        User?          @relation("UpdatedAnnotations", fields: [updatedById], references: [id])
+  aprobadoPor      User?          @relation("ApprovedAnnotations", fields: [aprobadoPorId], references: [id])
   referencias      AnotacionReferencia[]
 
   @@map("anotaciones")
