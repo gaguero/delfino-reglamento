@@ -20,7 +20,7 @@ interface Acta {
 }
 
 interface Articulo {
-  id: string
+  id: number
   numero: string
   nombre: string
 }

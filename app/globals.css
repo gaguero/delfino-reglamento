@@ -481,3 +481,10 @@
     }
   }
 }
+
+/* Homepage article cards */
+.article-card-home:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1) !important;
+  border-color: var(--d-red) !important;
+}

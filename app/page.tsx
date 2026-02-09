@@ -286,14 +286,6 @@ export default async function Home() {
           </p>
         </div>
       </footer>
-
-      <style jsx>{`
-        .article-card-home:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-          border-color: var(--delfino-primary);
-        }
-      `}</style>
     </div>
   )
 }
