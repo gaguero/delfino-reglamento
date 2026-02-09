@@ -60,19 +60,24 @@ export default {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user
       const isOnAdmin = nextUrl.pathname.startsWith('/admin')
-      const isOnLogin = nextUrl.pathname.startsWith('/admin/login')
+      const isOnLogin = nextUrl.pathname === '/admin/login'
 
-      if (isOnAdmin && !isOnLogin) {
-        if (!isLoggedIn) {
-          return Response.redirect(new URL('/admin/login', nextUrl))
+      // Allow access to login page for everyone
+      if (isOnLogin) {
+        // If already logged in, redirect to dashboard
+        if (isLoggedIn) {
+          return Response.redirect(new URL('/admin/dashboard', nextUrl))
         }
+        // Allow unauthenticated users to see login page
         return true
       }
 
-      if (isOnLogin && isLoggedIn) {
-        return Response.redirect(new URL('/admin/dashboard', nextUrl))
+      // For other admin pages, require login
+      if (isOnAdmin) {
+        return isLoggedIn
       }
 
+      // Allow all other pages
       return true
     },
     jwt({ token, user }) {
