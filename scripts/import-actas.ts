@@ -1,4 +1,6 @@
+import 'dotenv/config'
 import { PrismaClient } from '@prisma/client'
+import { PrismaPg } from '@prisma/adapter-pg'
 import * as fs from 'fs'
 import * as path from 'path'
 
@@ -11,7 +13,8 @@ interface Acta {
   articulos?: string[]
 }
 
-const prisma = new PrismaClient()
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
+const prisma = new PrismaClient({ adapter })
 const DATA_FILE = path.join(process.cwd(), 'data', 'actas-asamblea.json')
 
 async function importActas(): Promise<void> {
@@ -33,63 +36,25 @@ async function importActas(): Promise<void> {
       try {
         const tipoReferenciaId = actaData.tipo === 'Plenario' ? 3 : 4
 
-        const referencia = await prisma.referencia.upsert({
-          where: {
-            numero_tipoReferenciaId: {
-              numero: actaData.numero,
-              tipoReferenciaId: tipoReferenciaId
-            }
-          },
-          update: {
-            titulo: actaData.resumen || actaData.tipo || undefined,
-          },
-          create: {
+        const referencia = await prisma.referencia.create({
+          data: {
             numero: actaData.numero,
-            titulo: actaData.resumen || actaData.tipo || undefined,
+            titulo: actaData.resumen || `Acta ${actaData.tipo}`,
             tipoReferenciaId: tipoReferenciaId,
             urlPrincipal: actaData.url || undefined,
           }
         })
 
-        if (actaData.articulos && actaData.articulos.length > 0) {
-          for (const numArticulo of actaData.articulos) {
-            const articulo = await prisma.articulo.findUnique({
-              where: { numero: numArticulo }
-            })
-
-            if (articulo) {
-              await prisma.anotacionReferencia.create({
-                data: {
-                  orden: 1,
-                  referenciaId: referencia.id,
-                  anotacion: {
-                    create: {
-                      contenido: `Acta ${actaData.tipo}: ${actaData.resumen || ''}`,
-                      tipoAnotacionId: 2,
-                      articulo: { connect: { id: articulo.id } },
-                      createdBy: { connect: { id: 'seed-user' } },
-                      fuenteIA: true,
-                      esAprobada: false,
-                      orden: 1,
-                      esVisible: false
-                    }
-                  }
-                }
-              }).catch(() => null)
-            }
-          }
-        }
-
         created++
-        console.log(`✓ ${actaData.numero}`)
-      } catch (e) {
+        console.log(`✓ ${actaData.numero} (${actaData.tipo})`)
+      } catch (e: any) {
         errors++
-        console.log(`⚠️  Error con ${actaData.numero}`)
+        console.log(`⚠️  Error: ${actaData.numero} (${e.code || 'unknown'})`)
       }
     }
 
     console.log(`\n✅ Importación completada`)
-    console.log(`📊 Creadas/Actualizadas: ${created}`)
+    console.log(`📊 Creadas: ${created}`)
     console.log(`❌ Errores: ${errors}`)
 
   } catch (error) {

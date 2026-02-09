@@ -1,0 +1,21 @@
+[
+  {
+    "numero": "var strAyudaTodas = \"Muestra d",
+    "tipo": "Pronunciamiento",
+    "resumen": "Normativa\n                                \n\t\t\n\t\t\n\t\t\t\n                                    Pronunciamientos\n                                \n\t\t\n\t\t\n\t\t\t\n                                    Asuntos Constit",
+    "urlSCIJ": "https://pgrweb.go.cr/scij/avanzada_pgr.aspx",
+    "urlNexus": "https://nexuspj.poder-judicial.go.cr/?query=var%20strAyudaTodas%20%3D%20%22Muestra%20d"
+  },
+  {
+    "numero": "Buscar en:",
+    "tipo": "Pronunciamiento",
+    "resumen": "Ficha del documento\n\t\t\t\tContenido del texto",
+    "urlNexus": "https://nexuspj.poder-judicial.go.cr/?query=Buscar%20en%3A"
+  },
+  {
+    "numero": "Error indefinido",
+    "tipo": "Pronunciamiento",
+    "resumen": "Error indefinido",
+    "urlNexus": "https://nexuspj.poder-judicial.go.cr/?query=Error%20indefinido"
+  }
+]
