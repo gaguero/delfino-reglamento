@@ -2,18 +2,17 @@ import puppeteer, { Browser } from 'puppeteer'
 import * as fs from 'fs'
 import * as path from 'path'
 
-interface Voto {
+interface Acta {
   numero: string
+  tipo: 'Plenario' | 'Comisión'
   fecha?: string
-  tipo?: string
   resumen?: string
+  url?: string
   articulos?: string[]
-  urlSCIJ?: string
-  urlNexus?: string
 }
 
 const DATA_DIR = path.join(process.cwd(), 'data')
-const OUTPUT_FILE = path.join(DATA_DIR, 'votos-completos.json')
+const OUTPUT_FILE = path.join(DATA_DIR, 'actas-asamblea.json')
 
 async function ensureDataDir() {
   if (!fs.existsSync(DATA_DIR)) {
@@ -21,12 +20,12 @@ async function ensureDataDir() {
   }
 }
 
-async function scrapeVotos(): Promise<void> {
+async function scrapeActas(): Promise<void> {
   let browser: Browser | null = null
-  const votos: Voto[] = []
+  const actas: Acta[] = []
 
   try {
-    console.log('🚀 Iniciando scraper de votos SCIJ...')
+    console.log('🚀 Iniciando scraper de actas de Asamblea Legislativa...')
 
     browser = await puppeteer.launch({
       headless: true,
@@ -36,34 +35,28 @@ async function scrapeVotos(): Promise<void> {
         '--disable-dev-shm-usage',
         '--disable-gpu'
       ],
-      ignoreHTTPSErrors: true,
     })
 
     const page = await browser.newPage()
 
-    page.on('error', (err) => console.error('❌ Error:', err.message))
-
     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')
     await page.setDefaultNavigationTimeout(30000)
 
-    console.log('📄 Navegando a SCIJ...')
-
-    await page.goto('https://www.pgrweb.go.cr/scij/', { 
-      waitUntil: 'domcontentloaded' 
-    }).catch(() => null)
-
-    console.log('✓ Conectado a SCIJ')
+    console.log('📄 Navegando a Asamblea Legislativa...')
 
     const urls = [
-      'https://www.pgrweb.go.cr/scij/Busqueda/Pronunciamientos.aspx',
-      'https://www.pgrweb.go.cr/scij/Busqueda/Default.aspx?tipo=Pronunciamientos'
+      'https://www.asamblea.go.cr/glcp/actas/forms/plenario.aspx',
+      'https://www.asamblea.go.cr/sd/actas_constituyentes/Forms/AllItems.aspx'
     ]
 
     for (const url of urls) {
       try {
         console.log(`\n🔍 Accediendo a: ${url}`)
-        await page.goto(url, { waitUntil: 'domcontentloaded' })
         
+        await page.goto(url, { 
+          waitUntil: 'domcontentloaded'
+        }).catch(() => null)
+
         await new Promise(resolve => setTimeout(resolve, 1500))
 
         const extracted = await page.evaluate(() => {
@@ -71,20 +64,20 @@ async function scrapeVotos(): Promise<void> {
           
           const rows = Array.from(document.querySelectorAll('table tbody tr, tr[onclick]'))
           
-          rows.slice(0, 100).forEach(row => {
+          rows.slice(0, 50).forEach(row => {
             const cells = row.querySelectorAll('td')
-            if (cells.length < 2) return
+            if (cells.length < 1) return
 
-            const firstCell = cells[0].textContent?.trim()
-            const secondCell = cells[1].textContent?.trim()
+            const acta: any = {}
             
-            if (!firstCell || !secondCell) return
+            const text = row.textContent || ''
+            const numero = cells[0].textContent?.trim()
 
-            const voto: any = {}
-            
-            voto.numero = firstCell.substring(0, 30)
-            voto.tipo = 'Pronunciamiento'
-            voto.resumen = Array.from(cells).slice(1, 3)
+            if (!numero || numero.length < 2) return
+
+            acta.numero = numero.substring(0, 30)
+            acta.tipo = text.toLowerCase().includes('plenario') ? 'Plenario' : 'Comisión'
+            acta.resumen = Array.from(cells).slice(1)
               .map(c => c.textContent?.trim())
               .filter(Boolean)
               .join(' ')
@@ -92,11 +85,11 @@ async function scrapeVotos(): Promise<void> {
 
             const link = row.querySelector('a')
             if (link?.href) {
-              voto.urlSCIJ = link.href
+              acta.url = link.href
             }
 
-            if (voto.numero && voto.numero.length > 2) {
-              results.push(voto)
+            if (acta.numero) {
+              results.push(acta)
             }
           })
 
@@ -104,8 +97,8 @@ async function scrapeVotos(): Promise<void> {
         })
 
         if (extracted.length > 0) {
-          console.log(`✓ Extrajeron: ${extracted.length} registros`)
-          votos.push(...extracted.slice(0, 100))
+          console.log(`✓ Extrajeron: ${extracted.length} actas`)
+          actas.push(...extracted)
           break
         }
       } catch (e) {
@@ -115,12 +108,12 @@ async function scrapeVotos(): Promise<void> {
 
     console.log('\n🔗 Analizando referencias a artículos...')
 
-    for (let i = 0; i < Math.min(votos.length, 3); i++) {
-      const voto = votos[i]
-      if (!voto.urlSCIJ) continue
+    for (let i = 0; i < Math.min(actas.length, 2); i++) {
+      const acta = actas[i]
+      if (!acta.url) continue
 
       try {
-        await page.goto(voto.urlSCIJ, { waitUntil: 'domcontentloaded' })
+        await page.goto(acta.url, { waitUntil: 'domcontentloaded' })
         
         const articulos = await page.evaluate(() => {
           const text = document.body.textContent || ''
@@ -136,25 +129,25 @@ async function scrapeVotos(): Promise<void> {
         })
 
         if (articulos.length > 0) {
-          voto.articulos = articulos
+          acta.articulos = articulos
         }
       } catch (e) {
-        console.log(`⚠️  No se pudieron extraer referencias para ${voto.numero}`)
+        console.log(`⚠️  No se pudieron extraer referencias para ${acta.numero}`)
       }
     }
 
     await ensureDataDir()
-    fs.writeFileSync(OUTPUT_FILE, JSON.stringify(votos, null, 2))
+    fs.writeFileSync(OUTPUT_FILE, JSON.stringify(actas, null, 2))
 
     console.log(`\n✅ Datos guardados: ${OUTPUT_FILE}`)
-    console.log(`📊 Total: ${votos.length} registros`)
+    console.log(`📊 Total: ${actas.length} actas`)
 
-    if (votos.length > 0) {
-      console.log('\n📋 Primeros 3 registros:')
-      votos.slice(0, 3).forEach(v => {
-        console.log(`  - ${v.numero}: ${v.tipo || 'N/A'}`)
-        if (v.articulos?.length) {
-          console.log(`    Artículos: ${v.articulos.join(', ')}`)
+    if (actas.length > 0) {
+      console.log('\n📋 Primeras actas:')
+      actas.slice(0, 3).forEach(a => {
+        console.log(`  - ${a.numero} (${a.tipo})`)
+        if (a.articulos?.length) {
+          console.log(`    Artículos: ${a.articulos.join(', ')}`)
         }
       })
     }
@@ -168,4 +161,4 @@ async function scrapeVotos(): Promise<void> {
   }
 }
 
-scrapeVotos()
+scrapeActas()
